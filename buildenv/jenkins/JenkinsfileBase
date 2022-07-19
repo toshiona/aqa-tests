@@ -666,7 +666,30 @@ def runTest( ) {
 		}
 	}
 }
+def notifySlack(String buildStatus = 'STARTED') {
+//Build status of null means success.
+buildStatus = buildStatus ?: 'SUCCESS'
 
+def color
+def modify_message
+
+if (buildStatus == 'STARTED') {
+color = '#D4DADF'
+} else if (buildStatus == 'SUCCESS') {
+color = '#BDFFC3'
+modify_message = "MBCS_Tests SUCCESS"
+} else if (buildStatus == 'UNSTABLE') {
+color = '#FFFE89'
+modify_message = "MBCS_Tests FAILURE"
+} else {
+color = '#FF9FA1'
+modify_message = "BUILD FAILURE"
+}
+
+def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS} ${env.IMPLEMENTOR_VERSION}"
+
+slackSend(color: color, message: msg)
+}
 def post(output_name) {
 	stage('Post') {
 		timestamps{
@@ -717,7 +740,7 @@ def post(output_name) {
 								stopProcessingIfError: true)]
 				)
 			}
-
+notifySlack(currentBuild.result)
 			//for performance test, archive regardless the build result
 			if (env.BUILD_LIST.startsWith('perf')) {
 				def benchmark_output_tar_name = "benchmark_test_output${suffix}"
