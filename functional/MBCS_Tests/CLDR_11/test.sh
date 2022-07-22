@@ -16,6 +16,7 @@
 BASE=`dirname $0`
 export BASE
 OS=`uname`
+locale
 LOC=`locale charmap`
 FULLLANG=${OS}_${LANG%.*}.${LOC}
 
