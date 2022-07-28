@@ -686,7 +686,7 @@ color = '#FF9FA1'
 modify_message = "BUILD FAILURE"
 }
 
-JAVA_VERSION = sh (
+def JAVA_VERSION = sh (
     script: '${WORKSPACE}/openjdkbinary/j2sdk-image/bin/java -version',
     returnStdout: true
 ).trim()
