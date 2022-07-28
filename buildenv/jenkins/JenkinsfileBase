@@ -687,7 +687,7 @@ modify_message = "BUILD FAILURE"
 }
 
 JAVA_VERSION = sh (
-    script: '${WORKSPACE}/j2sdk-image/jre/java -version',
+    script: '${WORKSPACE}/j2sdk-image/bin/java -version',
     returnStdout: true
 ).trim()
 
