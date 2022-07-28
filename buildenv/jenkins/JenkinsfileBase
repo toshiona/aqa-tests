@@ -686,7 +686,12 @@ color = '#FF9FA1'
 modify_message = "BUILD FAILURE"
 }
 
-def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS} ${env.IMPLEMENTOR_VERSION}"
+JAVA_VERSION = sh (
+    script: '${WORKSPACE}/j2sdk-image/jre/bin/java -version',
+    returnStdout: true
+).trim()
+
+def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS}\n${JAVA_VERSION}"
 
 slackSend(color: color, message: msg)
 }
