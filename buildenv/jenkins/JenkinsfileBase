@@ -691,7 +691,7 @@ def JAVA_VERSION = sh (
     returnStdout: true
 ).trim()
 
-def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS}\\n${JAVA_VERSION}"
+def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS} ${JAVA_VERSION}"
 
 slackSend(color: color, message: msg)
 }
