@@ -727,6 +727,40 @@ def checkTestResults() {
 	summary.appendText("</ul>", false)
 }
 
+def notifySlack(String buildStatus = 'STARTED') {
+    //Build status of null means success.
+    buildStatus = buildStatus ?: 'SUCCESS'
+
+    def color
+    def modify_message
+    def java_version = ""
+
+    if (buildStatus == 'STARTED') {
+        color = '#D4DADF'
+    } else if (buildStatus == 'SUCCESS') {
+        color = '#BDFFC3'
+        java_version = sh (
+            script: '${WORKSPACE}/openjdkbinary/j2sdk-image/bin/java -version 2>&1',
+            returnStdout: true
+            ).trim()
+        modify_message = "MBCS_Tests SUCCESS"
+    } else if (buildStatus == 'UNSTABLE') {
+        color = '#FFFE89'
+        java_version = sh (
+            script: '${WORKSPACE}/openjdkbinary/j2sdk-image/bin/java -version 2>&1',
+            returnStdout: true
+            ).trim()
+        modify_message = "MBCS_Tests FAILURE"
+    } else {
+        color = '#FF9FA1'
+        modify_message = "BUILD FAILURE"
+    }
+
+    def msg = "${modify_message}:`${env.JOB_NAME}`#${env.BUILD_NUMBER} ${env.JDK_VERSION}-${env.SDK_RESOURCE} ${env.NODE_LABELS}\n${java_version}"
+
+    slackSend(color: color, message: msg)
+}
+
 def post(output_name) {
 	stage('Post') {
 		if (env.DISPLAY != null) {
@@ -765,6 +799,8 @@ def post(output_name) {
 		archiveFile("aqa-tests/testenv/testenv.properties", true)
 		archiveFile("aqa-tests/TKG/**/*.tap", true)
 		archiveAQAvitFiles()
+
+                notifySlack(currentBuild.result);
 
 		if (env.BUILD_LIST.startsWith('jck')) {
 			xunit (
