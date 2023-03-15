@@ -801,6 +801,7 @@ def post(output_name) {
 		archiveAQAvitFiles()
 
                 notifySlack(currentBuild.result);
+echo "${currentBuild}"
 
 		if (env.BUILD_LIST.startsWith('jck')) {
 			xunit (
